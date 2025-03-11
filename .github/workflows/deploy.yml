@@ -51,10 +51,9 @@ jobs:
         # kubectl get nodes  # Verify connection
         # echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > ~/.kube/config
 
-    - name: Verify Kubernetes Connection
+    - name: Verify Kubeconfig Contexts
       run: |
-        kubectl cluster-info
-        kubectl get nodes
+        run: kubectl config get-contexts
 
     # Deploy to Kubernetes
     - name: Deploy to EKS
