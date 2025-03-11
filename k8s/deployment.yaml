@@ -24,5 +24,3 @@ spec:
             configMapKeyRef:
               name: fastapi-config  # Name of the ConfigMap
               key: DATABASE_URL      # Key inside the ConfigMap
-      imagePullSecrets:
-      - name: ecr-secret
