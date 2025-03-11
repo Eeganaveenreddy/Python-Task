@@ -48,8 +48,13 @@ jobs:
       run: |
         mkdir -p ~/.kube
         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
-        kubectl get nodes  # Verify connection
-        echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > ~/.kube/config
+        # kubectl get nodes  # Verify connection
+        # echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > ~/.kube/config
+
+    - name: Verify Kubernetes Connection
+      run: |
+        kubectl cluster-info
+        kubectl get nodes
 
     # Deploy to Kubernetes
     - name: Deploy to EKS
