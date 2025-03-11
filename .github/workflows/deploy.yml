@@ -46,6 +46,9 @@ jobs:
     # Decode and configure Kubernetes kubeconfig
     - name: Setup Kubeconfig
       run: |
+        mkdir -p ~/.kube
+        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+        kubectl get nodes  # Verify connection
         echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > ~/.kube/config
 
     # Deploy to Kubernetes
