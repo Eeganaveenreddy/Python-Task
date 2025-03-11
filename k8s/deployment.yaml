@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: fastapi-container
-        # image: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
-        image: 288761760029.dkr.ecr.ap-south-1.amazonaws.com/python-task:latest
+        image: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
+        # image: 288761760029.dkr.ecr.ap-south-1.amazonaws.com/python-task:latest
         ports:
         - containerPort: 8000
         env:
