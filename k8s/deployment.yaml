@@ -14,12 +14,14 @@ spec:
     spec:
       containers:
       - name: fastapi-container
-        image: my-dockerhub-user/fastapi-app:latest
+        image: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
         ports:
         - containerPort: 8000
         env:
         - name: DATABASE_URL
           valueFrom:
             configMapKeyRef:
-              name: fastapi-config
-              key: DATABASE_URL
+              name: fastapi-config  # Name of the ConfigMap
+              key: DATABASE_URL      # Key inside the ConfigMap
+      imagePullSecrets:
+      - name: ecr-secret
