@@ -24,7 +24,7 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: StatefulSe
+kind: StatefulSet
 metadata:
   name: postgres
 spec:
