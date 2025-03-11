@@ -11,6 +11,10 @@ def startup():
     init_db()
     logger.info("Application startup completed")
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 @app.get("/")
 async def root():
     logger.info("Root endpoint accessed")
