@@ -26,3 +26,15 @@ spec:
               key: DATABASE_URL      # Key inside the ConfigMap
       imagePullSecrets:
       - name: ecr-secret
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8000
+        initialDelaySeconds: 10
+        periodSeconds: 20
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 8000
+        initialDelaySeconds: 5
+        periodSeconds: 10
