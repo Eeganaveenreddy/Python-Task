@@ -1,0 +1,59 @@
+name: Deploy FastAPI to AWS EKS
+
+on:
+  push:
+    branches:
+      - main  # Runs when changes are pushed to `main`
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    # Checkout the repo
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Configure AWS credentials
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # Authenticate with AWS ECR
+    - name: Login to Amazon ECR
+      id: ecr-login
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # Build and push Docker image
+    - name: Build & Push Docker Image
+      run: |
+        IMAGE_URI="<AWS_ACCOUNT_ID>.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
+        docker build -t $IMAGE_URI .
+        docker push $IMAGE_URI
+
+    # Decode and configure Kubernetes kubeconfig
+    - name: Setup Kubeconfig
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_BASE64 }}" | base64 --decode > ~/.kube/config
+
+    # Deploy to Kubernetes
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml
+
+    # Verify Deployment
+    - name: Check Pods
+      run: |
+        kubectl get pods -n default
