@@ -42,7 +42,7 @@ jobs:
         IMAGE_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
         docker build -t $IMAGE_URI -f Dockerfile .
         docker push $IMAGE_URI
-
+        
     # Decode and configure Kubernetes kubeconfig
     - name: Setup Kubeconfig
       run: |
