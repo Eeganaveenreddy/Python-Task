@@ -38,7 +38,6 @@ jobs:
       run: echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
 
     - name: Run Tests
-      export PYTHONPATH="${PYTHONPATH}:$(pwd)"
       run: pytest --asyncio-mode=auto || exit 1
 
   # -------------------------- #
