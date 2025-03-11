@@ -34,6 +34,10 @@ jobs:
         pip install -r requirements.txt
         pip install pytest httpx pytest-asyncio
 
+    - name: Set Environment Variables
+      run: |
+        echo "DATABASE_URL=postgresql://user:password@postgres-service:5432/testdb" >> $GITHUB_ENV
+
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
 
