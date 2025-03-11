@@ -34,12 +34,12 @@ jobs:
     - name: Login to Amazon ECR
       id: ecr-login
       run: |
-        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 288761760029.dkr.ecr.ap-south-1.amazonaws.com
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 288761760029.dkr.ecr.ap-south-1.amazonaws.com
 
     # Build and push Docker image
     - name: Build & Push Docker Image
       run: |
-        IMAGE_URI="<AWS_ACCOUNT_ID>.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
+        IMAGE_URI="<AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest"
         docker build -t $IMAGE_URI .
         docker push $IMAGE_URI
 
