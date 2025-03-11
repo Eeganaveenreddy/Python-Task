@@ -1,12 +1,12 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = "my-dockerhub-user/fastapi-app"
+        DOCKER_IMAGE = "egadoc/fastapi-app"
     }
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/myrepo/fastapi-k8s.git'
+                git 'https://github.com/Eeganaveenreddy/Python-Task.git'
             }
         }
         stage('Build & Test') {
