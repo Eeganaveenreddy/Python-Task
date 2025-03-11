@@ -23,6 +23,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
+  storageClassName: manual  # Must match PV's storageClassName
 
 ---
 apiVersion: v1
