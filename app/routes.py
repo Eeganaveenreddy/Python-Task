@@ -8,22 +8,18 @@ from .schemas import UserCreate, UserResponse
 from .logging_config import logger
 import random
 import string
+import time
 
+app = FastAPI()
 router = APIRouter()
 
-# In-memory storage for URL mappings
+# In-memory storage for URL mappings and usage stats
 url_mapping = {}
+url_stats = {}
 
 class URLRequest(BaseModel):
     url: str
-    expiry_minutes: int = None  # Optional expiry time
-
-class URLInfo(BaseModel):
-    url: str
-    short_url: str
-    access_count: int
-    expiry_time: str = None
-    
+    expiry_minutes: int | None = None  # Optional expiry
 
 def generate_short_key(length=6):
     """Generate a random short key"""
@@ -31,50 +27,55 @@ def generate_short_key(length=6):
 
 @router.post("/shorten/")
 async def shorten_url(request: URLRequest):
-    """Shorten a URL with optional expiry."""
+    """Shorten a URL and store the mapping with optional expiry"""
     short_key = generate_short_key()
     expiry_time = None
+
     if request.expiry_minutes:
-        expiry_time = datetime.utcnow() + timedelta(minutes=request.expiry_minutes)
-    
+        expiry_time = time.time() + (request.expiry_minutes * 60)  # Store expiry in UNIX timestamp
+
     url_mapping[short_key] = {
-        "url": str(request.url),
-        "access_count": 0,
+        "url": request.url,
         "expiry_time": expiry_time
     }
-    
+    url_stats[short_key] = {"access_count": 0}
+
     return {"short_url": f"http://127.0.0.1:8000/{short_key}"}
 
 @router.get("/{short_key}")
 async def redirect_to_original(short_key: str):
-    """Redirect to the original URL and track usage."""
+    """Redirect to the original URL and track usage"""
     if short_key not in url_mapping:
         raise HTTPException(status_code=404, detail="Short URL not found")
-    
+
     url_data = url_mapping[short_key]
-
-    # Check for expiry
-    if url_data["expiry_time"] and datetime.utcnow() > url_data["expiry_time"]:
+    
+    # Check if the URL is expired
+    if url_data["expiry_time"] and time.time() > url_data["expiry_time"]:
         del url_mapping[short_key]  # Remove expired URL
-        raise HTTPException(status_code=410, detail="Short URL has expired")
+        del url_stats[short_key]
+        raise HTTPException(status_code=410, detail="Short URL expired")
 
-    url_data["access_count"] += 1  # Increment access count
+    # Track the number of times accessed
+    url_stats[short_key]["access_count"] += 1
+
     return RedirectResponse(url=url_data["url"], status_code=302)
 
-@router.get("/stats/{short_key}", response_model=URLInfo)
+@router.get("/stats/{short_key}")
 async def get_url_stats(short_key: str):
-    """Get stats of a shortened URL."""
+    """Retrieve URL stats"""
     if short_key not in url_mapping:
         raise HTTPException(status_code=404, detail="Short URL not found")
-    
+
     url_data = url_mapping[short_key]
+    stats = url_stats[short_key]
+
     return {
         "url": url_data["url"],
-        "short_url": f"http://127.0.0.1:8000/{short_key}",
-        "access_count": url_data["access_count"],
-        "expiry_time": url_data["expiry_time"].isoformat() if url_data["expiry_time"] else None
+        "access_count": stats["access_count"],
+        "expiry_time": url_data["expiry_time"]
     }
-
+    
 @router.post("/users/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     logger.info(f"Creating user: {user.name}")
@@ -87,3 +88,5 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+app.include_router(router)
