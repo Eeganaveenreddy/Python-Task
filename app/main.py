@@ -13,34 +13,6 @@ import os
 
 app = FastAPI(title="FastAPI with PostgreSQL & K8s")
 
-router = APIRouter()
- 
-# In-memory storage for URL mappings
-url_mapping = {}
- 
-class URLRequest(BaseModel):
-    url: str
- 
-def generate_short_key(length=6):
-    """Generate a random short key"""
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
- 
-@router.post("/shorten/")
-async def shorten_url(request: URLRequest):
-    """Shorten a URL and store the mapping dynamically"""
-    short_key = generate_short_key()  # Generate a unique short key
-    url_mapping[short_key] = request.url  # Store the mapping
-    return {"short_url": f"http://127.0.0.1:8080/{short_key}"}
- 
-@router.get("/{short_key}")
-async def redirect_to_original(short_key: str):
-    """Redirect to the original URL"""
-    if short_key not in url_mapping:
-        raise HTTPException(status_code=404, detail="Short URL not found")
-   
-    original_url = url_mapping[short_key]
-    return RedirectResponse(url=original_url, status_code=302)
-
 @app.on_event("startup")
 def startup():
     init_db()
