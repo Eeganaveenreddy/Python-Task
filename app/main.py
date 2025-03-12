@@ -38,4 +38,19 @@ async def root():
     with open(os.path.join("app/templates", "index1.html"), "r") as file:
         return HTMLResponse(content=file.read(), status_code=200)
 
+@router.get("/stats/{short_key}", response_model=URLInfo)
+async def get_url_stats(short_key: str):
+    print("Current stored URLs:", url_mapping)  # Debugging line
+
+    if short_key not in url_mapping:
+        raise HTTPException(status_code=404, detail="Short URL not found")
+
+    url_data = url_mapping[short_key]
+    return {
+        "url": url_data["url"],
+        "short_url": f"http://127.0.0.1:8000/{short_key}",
+        "access_count": url_data["access_count"],
+    }
+
+
 app.include_router(router)
