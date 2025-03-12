@@ -9,6 +9,11 @@ import os
 
 app = FastAPI(title="FastAPI with PostgreSQL & K8s")
 
+class URLInfo(BaseModel):
+    url: str
+    short_url: str
+    access_count: int
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins (change for production)
