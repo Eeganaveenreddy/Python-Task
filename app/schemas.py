@@ -12,4 +12,5 @@ class UserResponse(UserCreate):
 
 class URLInfo(BaseModel):
     url: str
-    short
+    short_url: str
+    access_count: int
