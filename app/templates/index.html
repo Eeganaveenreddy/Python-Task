@@ -45,7 +45,7 @@
 <script>
         async function shortenURL() {
             const url = document.getElementById("original-url").value;
-            const expiry = document.getElementById("expiry-time").value || null;
+            const expiry = document.getElementById("expiry-time") ? document.getElementById("expiry-time").value : null;
             const payload = { url: url, expiry_minutes: expiry ? parseInt(expiry) : null };
         
             try {
@@ -62,18 +62,20 @@
                 const data = await response.json();
                 const shortenedUrl = data.short_url;
         
-                // Display the shortened URL as a clickable link
-                document.getElementById("shortened-url").innerHTML = 
-                    `<a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a>`;
+                // Display the shortened URL
+                document.getElementById("shortened-url").innerHTML = `<a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a>`;
         
-                // Automatically open the shortened URL in a new tab
-                window.open(shortenedUrl, "_blank");
-                
+                // Delay opening the link to ensure backend stores it first
+                setTimeout(() => {
+                    window.open(shortenedUrl, "_blank");
+                }, 1000);
+        
             } catch (error) {
                 console.error("Error:", error);
                 document.getElementById("shortened-url").innerText = "Failed to shorten URL.";
             }
         }
+
 
 
         async function fetchStats() {
