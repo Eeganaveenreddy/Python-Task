@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import router
 from app.logging_config import logger
+from app.schemas import UserCreate, UserResponse, URLInfo
 from app.database import init_db
 import os
 
