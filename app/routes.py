@@ -49,11 +49,6 @@ async def redirect_to_original(short_key: str):
     
     url_data = url_mapping[short_key]
 
-    # Check if the URL has expired
-    if url_data["expiry_time"] and datetime.utcnow() > url_data["expiry_time"]:
-        del url_mapping[short_key]
-        raise HTTPException(status_code=410, detail="Short URL has expired")
-
     url_data["access_count"] += 1  # Increment access count
     return RedirectResponse(url=url_data["url"], status_code=302)
 
@@ -67,9 +62,9 @@ async def get_url_stats(short_key: str):
     return {
         "url": url_data["url"],
         "short_url": f"http://127.0.0.1:8000/{short_key}",
-        "access_count": url_data["access_count"],
-        "expiry_time": url_data["expiry_time"].isoformat() if url_data["expiry_time"] else None
+        "access_count": url_data["access_count"]
     }
+
 
 @router.post("/users/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
