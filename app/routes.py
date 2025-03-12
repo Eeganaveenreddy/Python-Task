@@ -65,7 +65,6 @@ async def get_url_stats(short_key: str):
         "url": url_data["url"],
         "short_url": f"http://127.0.0.1:8000/{short_key}",
         "access_count": url_data["access_count"],
-        "expiry_time": url_data["expiry_time"].isoformat() if url_data["expiry_time"] else None
     }
 
 
