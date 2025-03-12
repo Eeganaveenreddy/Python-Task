@@ -15,7 +15,7 @@ def startup():
 def health_check():
     return {"status": "ok"}
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
     logger.info("Root endpoint accessed")
     with open(os.path.join("app/templates", "index.html"), "r") as file:
