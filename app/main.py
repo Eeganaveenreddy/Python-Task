@@ -18,6 +18,7 @@ def health_check():
 @app.get("/")
 async def root():
     logger.info("Root endpoint accessed")
-    return {"message": "Hello, FastAPI!"}
+    with open(os.path.join("app/templates", "index.html"), "r") as file:
+        return HTMLResponse(content=file.read(), status_code=200)
 
 app.include_router(router)
