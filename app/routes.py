@@ -8,9 +8,6 @@ from .schemas import UserCreate, UserResponse
 from .logging_config import logger
 import random
 import string
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
 
 router = APIRouter()
 
