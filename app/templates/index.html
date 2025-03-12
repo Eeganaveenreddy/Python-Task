@@ -70,31 +70,28 @@
     }
 
     async function getStats() {
-        const shortKey = document.getElementById("short-url-key").value.trim(); // Ensure no spaces
-    
-        if (!shortKey) {
-            document.getElementById("url-stats").innerText = "Please enter a valid short key!";
+        const shortUrl = document.getElementById("short-url-key").value;  
+        if (!shortUrl) {
+            document.getElementById("url-stats").innerText = "Please enter a short key!";
             return;
         }
     
-        console.log("Fetching stats for key:", shortKey);
+        const shortKey = shortUrl.replace("http://127.0.0.1:8000/", ""); // Extract key
+        console.log("Fetching stats for:", shortKey);  // Debugging
     
         try {
             const response = await fetch(`http://127.0.0.1:8000/stats/${shortKey}`);
-            
-            if (!response.ok) {
-                throw new Error(`Short URL not found (Error ${response.status})`);
-            }
-            
-            const data = await response.json(); // Ensure API returns valid JSON
+            if (!response.ok) throw new Error("Short URL not found");
+    
+            const data = await response.json();
             console.log("Stats response:", data);
-            
             document.getElementById("url-stats").innerText = `Access count: ${data.access_count}`;
         } catch (error) {
-            console.error("Error fetching stats:", error);
+            console.error(error);
             document.getElementById("url-stats").innerText = "Invalid short URL!";
         }
     }
+
 
 </script>
 
