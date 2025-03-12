@@ -5,31 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>URL Shortener</title>
 <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        input {
-            width: 60%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: blue;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        #shortened-url {
-            margin-top: 20px;
-            font-weight: bold;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+    }
+    input {
+        width: 60%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: blue;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    #shortened-url {
+        margin-top: 20px;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
+
 <h1>URL Shortener</h1>
 <p>Enter the Original URL:</p>
 <input type="text" id="original-url" placeholder="Enter URL here">
@@ -40,51 +41,56 @@
 <h2>Check URL Stats</h2>
 <input type="text" id="short-url-key" placeholder="Enter Short Key">
 <button onclick="getStats()">Get Stats</button>
-<p id="url-stats"></p>
- 
+<p id="url-stats"></p> <!-- Fixed ID -->
+
 <script>
-        async function shortenURL() {
-            const url = document.getElementById("original-url").value;
-            const payload = { url: url }; 
-        
-            try {
-                const response = await fetch("http://127.0.0.1:8000/shorten/", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-        
-                if (!response.ok) {
-                    throw new Error(`Failed to shorten URL: ${response.status}`);
-                }
-        
-                const data = await response.json();
-                document.getElementById("shortened-url").innerHTML = `<a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
-        
-            } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("shortened-url").innerText = "Failed to shorten URL.";
+    async function shortenURL() {
+        const url = document.getElementById("original-url").value;
+        const payload = { url: url }; 
+    
+        try {
+            const response = await fetch("http://127.0.0.1:8000/shorten/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to shorten URL: ${response.status}`);
             }
+    
+            const data = await response.json();
+            document.getElementById("shortened-url").innerHTML = 
+                `<a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+    
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("shortened-url").innerText = "Failed to shorten URL.";
         }
+    }
 
-        async function getStats() {
-            const shortUrl = document.getElementById("stats-url").value;
-            console.log("Fetching stats for:", shortUrl);
-        
-            try {
-                const response = await fetch(shortUrl.replace("http://127.0.0.1:8000/", "http://127.0.0.1:8000/stats/"));
-                if (!response.ok) throw new Error("Short URL not found");
-                
-                const data = await response.json();
-                console.log("Stats response:", data);
-                document.getElementById("stats-result").innerText = `Access count: ${data.access_count}`;
-            } catch (error) {
-                console.error(error);
-                document.getElementById("stats-result").innerText = "Invalid short URL!";
-            }
+    async function getStats() {
+        const shortKey = document.getElementById("short-url-key").value.trim(); // FIX: Get short key only
+        console.log("Fetching stats for key:", shortKey);
+
+        if (!shortKey) {
+            document.getElementById("url-stats").innerText = "Please enter a valid short key!";
+            return;
         }
-
-   
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/stats/${shortKey}`);
+            if (!response.ok) throw new Error("Short URL not found");
+            
+            const data = await response.json();
+            console.log("Stats response:", data);
+            document.getElementById("url-stats").innerText = `Access count: ${data.access_count}`;
+        } catch (error) {
+            console.error(error);
+            document.getElementById("url-stats").innerText = "Invalid short URL!";
+        }
+    }
 </script>
+
 </body>
 </html>
