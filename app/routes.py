@@ -26,7 +26,7 @@ async def shorten_url(request: URLRequest):
     """Shorten a URL and store the mapping dynamically"""
     short_key = generate_short_key()  # Generate a unique short key
     url_mapping[short_key] = request.url  # Store the mapping
-    return {"short_url": f"http://127.0.0.1:8080/{short_key}"}
+    return {"short_url": f"http://127.0.0.1:8000/{short_key}"}
 
 @router.get("/{short_key}")
 async def redirect_to_original(short_key: str):
