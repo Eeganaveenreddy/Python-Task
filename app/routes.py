@@ -55,6 +55,8 @@ async def redirect_to_original(short_key: str):
 @router.get("/stats/{short_key}", response_model=URLInfo)
 async def get_url_stats(short_key: str):
     """Get statistics for a shortened URL."""
+    print("Current stored keys:", url_mapping.keys())  # Debugging log
+    
     if short_key not in url_mapping:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
@@ -62,7 +64,8 @@ async def get_url_stats(short_key: str):
     return {
         "url": url_data["url"],
         "short_url": f"http://127.0.0.1:8000/{short_key}",
-        "access_count": url_data["access_count"]
+        "access_count": url_data["access_count"],
+        "expiry_time": url_data["expiry_time"].isoformat() if url_data["expiry_time"] else None
     }
 
 
