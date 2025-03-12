@@ -23,7 +23,7 @@ async def root():
     with open(os.path.join("app/templates", "index.html"), "r") as file:
         return HTMLResponse(content=file.read(), status_code=200)
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/user", response_class=HTMLResponse)
 async def root():
     logger.info("Root endpoint accessed")
     with open(os.path.join("app/templates", "index1.html"), "r") as file:
