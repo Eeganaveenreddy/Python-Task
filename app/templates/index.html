@@ -47,16 +47,34 @@
             const url = document.getElementById("original-url").value;
             const expiry = document.getElementById("expiry-time").value || null;
             const payload = { url: url, expiry_minutes: expiry ? parseInt(expiry) : null };
-
-            const response = await fetch("http://127.0.0.1:8000/shorten/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-            document.getElementById("shortened-url").innerHTML = `<a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+        
+            try {
+                const response = await fetch("http://127.0.0.1:8000/shorten/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+        
+                if (!response.ok) {
+                    throw new Error("Failed to shorten URL");
+                }
+        
+                const data = await response.json();
+                const shortenedUrl = data.short_url;
+        
+                // Display the shortened URL as a clickable link
+                document.getElementById("shortened-url").innerHTML = 
+                    `<a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a>`;
+        
+                // Automatically open the shortened URL in a new tab
+                window.open(shortenedUrl, "_blank");
+                
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("shortened-url").innerText = "Failed to shorten URL.";
+            }
         }
+
 
         async function fetchStats() {
             const shortKey = document.getElementById("short-url-key").value;
