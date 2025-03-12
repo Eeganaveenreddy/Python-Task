@@ -4,11 +4,6 @@ from fastapi.staticfiles import StaticFiles
 from app.routes import router
 from app.logging_config import logger
 from app.database import init_db
-import random
-import string
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
 import os
 
 app = FastAPI(title="FastAPI with PostgreSQL & K8s")
