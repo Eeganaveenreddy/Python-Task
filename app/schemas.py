@@ -9,3 +9,7 @@ class UserResponse(UserCreate):
 
     class Config:
         from_attributes = True
+
+class URLInfo(BaseModel):
+    url: str
+    short
