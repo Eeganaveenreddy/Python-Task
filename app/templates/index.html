@@ -67,20 +67,24 @@
             }
         }
 
-
-
-        async function fetchStats() {
-            const shortKey = document.getElementById("short-url-key").value;
-            const response = await fetch(`http://127.0.0.1:8000/stats/${shortKey}`);
-
-            if (!response.ok) {
-                document.getElementById("url-stats").innerText = "Invalid short URL!";
-                return;
+        async function getStats() {
+            const shortUrl = document.getElementById("stats-url").value;
+            console.log("Fetching stats for:", shortUrl);
+        
+            try {
+                const response = await fetch(shortUrl.replace("http://127.0.0.1:8000/", "http://127.0.0.1:8000/stats/"));
+                if (!response.ok) throw new Error("Short URL not found");
+                
+                const data = await response.json();
+                console.log("Stats response:", data);
+                document.getElementById("stats-result").innerText = `Access count: ${data.access_count}`;
+            } catch (error) {
+                console.error(error);
+                document.getElementById("stats-result").innerText = "Invalid short URL!";
             }
-
-            const data = await response.json();
-            document.getElementById("url-stats").innerText = `Original URL: ${data.url}, Access Count: ${data.access_count}, Expiry: ${data.expiry_time || 'None'}`;
         }
+
+   
 </script>
 </body>
 </html>
