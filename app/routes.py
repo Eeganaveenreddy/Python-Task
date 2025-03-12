@@ -17,7 +17,7 @@ url_mapping = {}
 
 class URLRequest(BaseModel):
     url: str
-    expiry_minutes: int = None  # Optional expiry time
+    # expiry_minutes: int = None  # Optional expiry time
 
 class URLInfo(BaseModel):
     url: str
@@ -33,15 +33,10 @@ def generate_short_key(length=6):
 async def shorten_url(request: URLRequest):
     """Shorten a URL with optional expiry and track usage."""
     short_key = generate_short_key()
-    expiry_time = None
     
-    if request.expiry_minutes:
-        expiry_time = datetime.utcnow() + timedelta(minutes=request.expiry_minutes)
-
     url_mapping[short_key] = {
         "url": request.url,
         "access_count": 0,  # Initialize access count
-        "expiry_time": expiry_time
     }
     
     return {"short_url": f"http://127.0.0.1:8000/{short_key}"}
