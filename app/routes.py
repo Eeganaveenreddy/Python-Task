@@ -12,7 +12,7 @@ from .logging_config import logger
 
 router = APIRouter()
 
-# In-memory storage for URL mappings (temporary storage)
+# In-memory storage for URL mappings
 url_mapping = {}
 
 class URLRequest(BaseModel):
@@ -26,46 +26,45 @@ class URLInfo(BaseModel):
     expiry_time: str = None
 
 def generate_short_key(length=6):
-    """Generate a random short key"""
+    """Generate a random short key."""
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 @router.post("/shorten/")
 async def shorten_url(request: URLRequest):
-    """Shorten a URL with optional expiry"""
+    """Shorten a URL with optional expiry and track usage."""
     short_key = generate_short_key()
     expiry_time = None
-
+    
     if request.expiry_minutes:
         expiry_time = datetime.utcnow() + timedelta(minutes=request.expiry_minutes)
 
     url_mapping[short_key] = {
         "url": request.url,
-        "access_count": 0,
+        "access_count": 0,  # Initialize access count
         "expiry_time": expiry_time
     }
-
+    
     return {"short_url": f"http://127.0.0.1:8000/{short_key}"}
 
 @router.get("/{short_key}")
 async def redirect_to_original(short_key: str):
-    """Redirect to the original URL and track usage"""
+    """Redirect to the original URL and track usage."""
     if short_key not in url_mapping:
         raise HTTPException(status_code=404, detail="Short URL not found")
-
+    
     url_data = url_mapping[short_key]
 
-    # Check if the URL is expired
+    # Check if the URL has expired
     if url_data["expiry_time"] and datetime.utcnow() > url_data["expiry_time"]:
-        del url_mapping[short_key]  # Remove expired URL
+        del url_mapping[short_key]
         raise HTTPException(status_code=410, detail="Short URL has expired")
 
-    # Increment access count before redirecting
-    url_data["access_count"] += 1
+    url_data["access_count"] += 1  # Increment access count
     return RedirectResponse(url=url_data["url"], status_code=302)
 
 @router.get("/stats/{short_key}", response_model=URLInfo)
 async def get_url_stats(short_key: str):
-    """Get stats of a shortened URL"""
+    """Get statistics for a shortened URL."""
     if short_key not in url_mapping:
         raise HTTPException(status_code=404, detail="Short URL not found")
 
