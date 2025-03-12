@@ -36,19 +36,39 @@
 <br>
 <button onclick="shortenURL()">Shorten URL</button>
 <p id="shortened-url"></p>
+
+<h2>Check URL Stats</h2>
+<input type="text" id="short-url-key" placeholder="Enter Short Key">
+<button onclick="fetchStats()">Get Stats</button>
+<p id="url-stats"></p>
  
-    <script>
+<script>
         async function shortenURL() {
-            const originalUrl = document.getElementById("original-url").value;
+            const url = document.getElementById("original-url").value;
+            const expiry = document.getElementById("expiry-time").value || null;
+            const payload = { url: url, expiry_minutes: expiry ? parseInt(expiry) : null };
+
             const response = await fetch("http://127.0.0.1:8000/shorten/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: originalUrl }),
+                body: JSON.stringify(payload)
             });
- 
+
             const data = await response.json();
-            document.getElementById("shortened-url").innerHTML = 
-                `<a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+            document.getElementById("shortened-url").innerHTML = `<a href="${data.short_url}" target="_blank">${data.short_url}</a>`;
+        }
+
+        async function fetchStats() {
+            const shortKey = document.getElementById("short-url-key").value;
+            const response = await fetch(`http://127.0.0.1:8000/stats/${shortKey}`);
+
+            if (!response.ok) {
+                document.getElementById("url-stats").innerText = "Invalid short URL!";
+                return;
+            }
+
+            const data = await response.json();
+            document.getElementById("url-stats").innerText = `Original URL: ${data.url}, Access Count: ${data.access_count}, Expiry: ${data.expiry_time || 'None'}`;
         }
 </script>
 </body>
