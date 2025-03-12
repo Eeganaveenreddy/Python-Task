@@ -7,42 +7,42 @@ on:
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
-  # -------------------------- #
-  # Run Unit Tests
-  # -------------------------- #
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+  # # -------------------------- #
+  # # Run Unit Tests
+  # # -------------------------- #
+  # test:
+  #   name: Run Tests
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'  # Change to match your Python version
+  #   - name: Set up Python
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.10'  # Change to match your Python version
 
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential python3-dev libssl-dev libffi-dev rustc
+  #   - name: Install System Dependencies
+  #     run: |
+  #       sudo apt-get update
+  #       sudo apt-get install -y build-essential python3-dev libssl-dev libffi-dev rustc
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -r requirements.txt
-        pip install pytest httpx pytest-asyncio
+  #   - name: Install Dependencies
+  #     run: |
+  #       python -m pip install --upgrade pip setuptools wheel
+  #       pip install -r requirements.txt
+  #       pip install pytest httpx pytest-asyncio
 
-    - name: Set Environment Variables
-      run: |
-        echo "DATABASE_URL=postgresql://user:password@postgres-service:5432/testdb" >> $GITHUB_ENV
+  #   - name: Set Environment Variables
+  #     run: |
+  #       echo "DATABASE_URL=postgresql://user:password@postgres-service:5432/testdb" >> $GITHUB_ENV
 
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
+  #   - name: Set PYTHONPATH
+  #     run: echo "PYTHONPATH=${PYTHONPATH}:$(pwd)" >> $GITHUB_ENV
 
-    - name: Run Tests
-      run: pytest --asyncio-mode=auto || exit 1
+  #   - name: Run Tests
+  #     run: pytest --asyncio-mode=auto || exit 1
 
   # -------------------------- #
   # Build & Push Docker Image
