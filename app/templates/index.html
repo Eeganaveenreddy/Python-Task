@@ -55,21 +55,22 @@
                     body: JSON.stringify(payload)
                 });
         
+                console.log("Response status:", response.status);
+        
                 if (!response.ok) {
-                    throw new Error("Failed to shorten URL");
+                    throw new Error(`Failed to shorten URL: ${response.status}`);
                 }
         
                 const data = await response.json();
-                const shortenedUrl = data.short_url;
+                console.log("Response data:", data);
         
-                // Display the shortened URL
+                const shortenedUrl = data.short_url;
                 document.getElementById("shortened-url").innerHTML = `<a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a>`;
         
-                // Delay opening the link to ensure backend stores it first
                 setTimeout(() => {
                     window.open(shortenedUrl, "_blank");
                 }, 1000);
-        
+                
             } catch (error) {
                 console.error("Error:", error);
                 document.getElementById("shortened-url").innerText = "Failed to shorten URL.";
