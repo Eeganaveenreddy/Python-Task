@@ -6,6 +6,7 @@ from app.routes import router
 from app.logging_config import logger
 from app.schemas import UserCreate, UserResponse, URLInfo
 from app.database import init_db
+from app.routes import url_mapping
 import os
 
 app = FastAPI(title="FastAPI with PostgreSQL & K8s")
