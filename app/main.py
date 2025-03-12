@@ -8,6 +8,14 @@ import os
 
 app = FastAPI(title="FastAPI with PostgreSQL & K8s")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (change for production)
+    allow_credentials=True,
+    allow_methods=["*"],   # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],   # Allow all headers
+)
+
 @app.on_event("startup")
 def startup():
     init_db()
